@@ -42,6 +42,11 @@
 #include <X11/extensions/Xrandr.h>
 #include <security/pam_appl.h>
 
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <linux/vt.h>
+
 #ifdef __GNUC__
     #define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 #else
@@ -321,7 +326,7 @@ main(int argc, char** argv) {
 
     /* set default values for command-line arguments */
     opt_passchar = "*";
-    opt_font = "-misc-fixed-medium-r-*--17-120-*-*-*-*-iso8859-1";
+    opt_font = "-*-dejavu sans-bold-r-*-*-*-420-100-100-*-*-iso8859-1";
     opt_username = username;
     opt_hidelength = False;
 
@@ -475,9 +480,27 @@ main(int argc, char** argv) {
         /* force dpms enabled until exit */
         DPMSEnable(dpy);
     }
+    /* disable tty switching */
+    int term;
+    if ((term = open("/dev/console", O_RDWR)) == -1) {
+        fprintf(stderr, "error opening console\n");
+    }
+
+    int ioterm = ioctl(term, VT_LOCKSWITCH);
+    if (ioterm == -1) {
+        fprintf(stderr, "error locking console\n");
+    }
 
     /* run main loop */
     main_loop(w, gc, font, &info, passdisp, opt_username, black, white, red, opt_hidelength);
+
+    /* enable tty switching */
+    if (ioterm >= 0)
+        if ((ioctl(term, VT_UNLOCKSWITCH)) == -1) {
+            fprintf(stderr, "error unlocking console\n");
+        }
+    if(term >= 0)
+        close(term);
 
     /* restore dpms settings */
     if (using_dpms) {

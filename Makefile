@@ -6,7 +6,7 @@
 # © 2006-2008 Anselm R. Garbe, Sander van Dijk
 
 NAME = sxlock
-VERSION = 1.0
+VERSION = 1.1
 
 CC := $(CC) -std=c99
 
@@ -29,5 +29,5 @@ clean:
 	$(RM) sxlock
 
 install: sxlock
-	install -Dm755 sxlock $(DESTDIR)/usr/bin/sxlock
+	install -Dm4755 sxlock $(DESTDIR)/usr/bin/sxlock
 	install -Dm644 sxlock.pam $(DESTDIR)/etc/pam.d/sxlock
