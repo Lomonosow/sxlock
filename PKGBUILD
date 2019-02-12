@@ -1,5 +1,5 @@
 pkgname=sxlock
-pkgver=r33.bb9c038
+pkgver=r33.d8abb7a
 pkgrel=1
 pkgdesc="A simple screen locker for X"
 arch=('i686' 'x86_64')
@@ -24,4 +24,5 @@ package() {
   cd "$srcdir/sxlock"
   make PREFIX=/usr DESTDIR="$pkgdir" install
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 sxlock.service "$pkgdir/etc/systemd/system/sxlock@.service"
 }
